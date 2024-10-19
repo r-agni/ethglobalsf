@@ -35,6 +35,15 @@ const NavBar = () => {
           >
             Dashboard
           </button>
+          <button 
+            className="text-gray-600 hover:text-gray-800 transition duration-300"
+            onClick={() => {
+                console.log("Button clicked");
+                navigate('/getstarted');
+            }}
+          >
+            Sign Up
+          </button>
         </div>
       </div>
     </nav>
