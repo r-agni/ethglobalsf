@@ -1,3 +1,5 @@
+/node_modules
+/nodejs/.env
 # Logs
 logs
 *.log
