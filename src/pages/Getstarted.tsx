@@ -106,7 +106,9 @@ const Getstarted: React.FC = () => {
     };
 
     return (
-        <div className="relative w-full min-h-screen bg-white">
+        // <div className="relative w-full min-h-screen bg-white">
+        <div className="relative w-full min-h-screen bg-gradient-to-b from-sky-500 to-cyan-200">
+
             {/* Navigation Bar */}
             <NavBar />
 
