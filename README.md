@@ -1,12 +1,16 @@
 # ethglobalsf
 
 #Setup
-1. Run:
+1. Add private key to `nodejs/.env` file
+```
+ETHEREUM_PRIVATE_KEY = "dsjnsdfpniksdafkjsdfnlksdflnksdfdlkmasdnoin"
+```
+2. Run:
 ```
 cd nodejs
 npm install
 ```
-2. Run:
+3. Run:
 ```
 cd ./browser
 npm install
