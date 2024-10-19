@@ -1,13 +1,13 @@
 const code = `
 (async () => {
   // Decrypt health metrics inside the TEE using Lit Protocol's decryptAndCombine
-  const decryptedHeartRate = await Lit.Actions.decryptAndCombine({
+  const decryptedHeartRates = await Lit.Actions.decryptAndCombine({
     accessControlConditions,
     ciphertext: encryptedHeartRate,
     chain: 'ethereum',
   });
 
-  const decryptedRespiratoryRate = await Lit.Actions.decryptAndCombine({
+  const decryptedRespiratoryRates = await Lit.Actions.decryptAndCombine({
     accessControlConditions,
     ciphertext: encryptedRespiratoryRate,
     chain: 'ethereum',
@@ -25,7 +25,7 @@ const code = `
     chain: 'ethereum',
   });
 
-  const decryptedRestingHeartRate = await Lit.Actions.decryptAndCombine({
+  const decryptedRestingHeartRates = await Lit.Actions.decryptAndCombine({
     accessControlConditions,
     ciphertext: encryptedRestingHeartRate,
     chain: 'ethereum',
@@ -41,15 +41,17 @@ const code = `
   const context = ts.context(ts.SCHEME_TYPE.CKKS, poly_modulus_degree=8192, coeff_mod_bit_sizes=[40, 21, 21, 21]);
   context.generate_galois_keys();
 
-  // Re-encrypt the decrypted values using CKKS for homomorphic encryption
-  const heEncryptedHeartRate = ts.ckks_vector(context, [decryptedHeartRate]);
-  const heEncryptedRespiratoryRate = ts.ckks_vector(context, [decryptedRespiratoryRate]);
+  // Convert the decrypted lists of values into HE-encrypted CKKS vectors
+  const heEncryptedHeartRates = ts.ckks_vector(context, decryptedHeartRates);
+  const heEncryptedRespiratoryRates = ts.ckks_vector(context, decryptedRespiratoryRates);
   const heEncryptedBMI = ts.ckks_vector(context, [decryptedBMI]);
   const heEncryptedVO2Max = ts.ckks_vector(context, [decryptedVO2Max]);
-  const heEncryptedRestingHeartRate = ts.ckks_vector(context, [decryptedRestingHeartRate]);
+  const heEncryptedRestingHeartRates = ts.ckks_vector(context, decryptedRestingHeartRates);
   const heEncryptedActiveEnergyBurned = ts.ckks_vector(context, [decryptedActiveEnergyBurned]);
 
   // Perform the health score computation using CKKS-encrypted values
+
+  // Define the weights for each metric
   const heartRateWeight = 0.2;
   const respiratoryRateWeight = 0.1;
   const bmiWeight = 0.25;
@@ -57,17 +59,22 @@ const code = `
   const restingHeartRateWeight = 0.1;
   const activeEnergyBurnedWeight = 0.15;
 
-  // Compute the weighted sum for the health score
+  // Calculate the norm or average for the time-series metrics like heart rate and respiratory rate
+  const heartRateAverage = heEncryptedHeartRates.reduce((a, b) => a + b) / heEncryptedHeartRates.length;
+  const respiratoryRateAverage = heEncryptedRespiratoryRates.reduce((a, b) => a + b) / heEncryptedRespiratoryRates.length;
+  const restingHeartRateAverage = heEncryptedRestingHeartRates.reduce((a, b) => a + b) / heEncryptedRestingHeartRates.length;
+
+  // Compute the weighted sum for the final encrypted health score using CKKS vectors
   const heEncryptedHealthScore = (
-    heEncryptedHeartRate * heartRateWeight +
-    heEncryptedRespiratoryRate * respiratoryRateWeight +
+    heartRateAverage * heartRateWeight +
+    respiratoryRateAverage * respiratoryRateWeight +
     heEncryptedBMI * bmiWeight +
     heEncryptedVO2Max * vo2MaxWeight +
-    heEncryptedRestingHeartRate * restingHeartRateWeight +
+    restingHeartRateAverage * restingHeartRateWeight +
     heEncryptedActiveEnergyBurned * activeEnergyBurnedWeight
   );
 
-  // Encrypt the computed health score and return it securely
+  // Encrypt the computed health score and return it securely using Lit Protocol
   const encryptedHealthScore = await Lit.Actions.encryptString({
     accessControlConditions,
     chain: 'ethereum',
