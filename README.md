@@ -1,8 +1,17 @@
 # ethglobalsf
 
-
-Run with:
+#Setup
+1. Run:
 ```
-cd browser
+cd nodejs
+npm install
+```
+2. Run:
+```
+cd ./browser
+npm install
 npm run dev:all
 ```
+
+# To Do:
+- [ ] Add build script to nodejs
