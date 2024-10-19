@@ -13,7 +13,7 @@ const NavBar = () => {
   return (
     <nav className="bg-white shadow-md p-4 rounded-b-lg">
       <div className="flex justify-between">
-        <h1 className="text-xl font-bold text-skyblue-900">Salus</h1>
+        <h1 className="text-xl font-bold text-sky-900">Salus</h1>
         <div className="flex space-x-4">
           <button 
             className="text-gray-600 hover:text-gray-800 transition duration-300"
