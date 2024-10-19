@@ -24,10 +24,9 @@ export const GetStarted = () => {
             Set Up Wallet
           </Link>
         </div>
-        <div className="mt-8 flex items-center justify-center text-gray-600 hover:text-gray-800">
-          <span className="mr-2">Learn More</span>
+        <div className="mt-8 flex justify-end items-center text-gray-600 hover:text-gray-800">
           <Link to="/learn-more" className="text-blue-500 hover:underline">
-            Read More
+            Learn more
           </Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
