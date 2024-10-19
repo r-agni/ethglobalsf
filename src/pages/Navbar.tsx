@@ -16,6 +16,16 @@ const NavBar = () => {
         
         <h1 className="text-xl font-bold text-gray-800">Salus</h1>
         <div className="flex space-x-4">
+          
+          <button 
+            className="text-gray-600 hover:text-gray-800 transition duration-300"
+            onClick={() => {
+                console.log("Button clicked");
+                navigate('/');
+            }}
+          >
+            Home
+          </button>
           <button 
             className="text-gray-600 hover:text-gray-800 transition duration-300"
             onClick={() => {
