@@ -25,7 +25,7 @@ export const GetStarted = () => {
           </Link>
         </div>
         <div className="mt-8 flex justify-end items-center text-gray-600 hover:text-gray-800">
-          <Link to="/learn-more" className="text-blue-500 hover:underline">
+          <Link to="/learnmore" className="text-blue-500 hover:underline">
             Learn more
           </Link>
           <svg
