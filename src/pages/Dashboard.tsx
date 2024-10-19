@@ -77,7 +77,7 @@ const DataSection: React.FC<DataSectionProps> = ({ profile, health, earningText,
     </div>
 );
 
-const Getstarted: React.FC = () => {
+const Dashboard: React.FC = () => {
     const [anonimized, setAnonimized] = useState(true);
 
     // Dummy data for user profile and health data
@@ -157,4 +157,4 @@ const Getstarted: React.FC = () => {
     );
 };
 
-export default Getstarted;
+export default Dashboard;

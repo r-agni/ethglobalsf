@@ -30,10 +30,10 @@ const NavBar = () => {
             className="text-gray-600 hover:text-gray-800 transition duration-300"
             onClick={() => {
                 console.log("Button clicked");
-                navigate('/getstarted');
+                navigate('/dashboard');
             }}
           >
-            Get Started
+            Dashboard
           </button>
         </div>
       </div>
