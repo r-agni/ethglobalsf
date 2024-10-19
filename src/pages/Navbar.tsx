@@ -11,15 +11,16 @@ const NavBar = () => {
 //   };
 
   return (
-    <nav className="bg-white shadow-md p-4 rounded-b-lg">
-      <div className="flex justify-between">
+    <nav className="bg-white p-4 rounded-b-lg relative z-20">
+      <div className="flex justify-between"> 
+        
         <h1 className="text-xl font-bold text-gray-800">Salus</h1>
         <div className="flex space-x-4">
           <button 
             className="text-gray-600 hover:text-gray-800 transition duration-300"
             onClick={() => {
                 console.log("Button clicked");
-                // navigate('/getstarted');
+                navigate('/getstarted');
             }}
           >
             Get Started

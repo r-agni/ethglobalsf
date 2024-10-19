@@ -7,7 +7,7 @@ const Home = () => {
       {/* Navigation Bar */}
       <NavBar />
 
-      <div className="absolute inset-0 bg-gradient-to-br from-sky-100 to-cyan-50"></div>
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-sky-100 to-cyan-50"></div> */}
       
       {/* Top Half */}
       <div className="relative z-10 p-8 bg-white rounded-b-lg shadow-lg flex flex-col items-center justify-center h-1/2">
