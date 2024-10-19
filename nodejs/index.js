@@ -3,14 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { LitNodeClient } = require('@lit-protocol/lit-node-client');
-const { LitNetwork, LIT_RPC } = require('@lit-protocol/constants');
-const { 
-  LitAbility, 
-  LitActionResource, 
-  createSiweMessage, 
-  generateAuthSig 
-} = require('@lit-protocol/auth-helpers');
-const ethers = require('ethers');
+const { LitNetwork } = require('@lit-protocol/constants');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
@@ -18,23 +11,6 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
-
-const initializeWallet = () => {
-  try {
-    const privateKey = process.env.ETHEREUM_PRIVATE_KEY;
-    if (!privateKey) {
-      throw new Error('ETHEREUM_PRIVATE_KEY is not set in environment variables');
-    }
-
-    const provider = new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE);
-    const wallet = new ethers.Wallet(privateKey, provider);
-    console.log(`Wallet initialized with address: ${wallet.address}`);
-    return wallet;
-  } catch (error) {
-    console.error('Failed to initialize wallet:', error);
-    throw error;
-  }
-};
 
 const initializeLitClient = async () => {
   try {
@@ -52,31 +28,17 @@ const initializeLitClient = async () => {
   }
 };
 
-const defineLitAction = () => {
-  const _litActionCode = async () => {
-    if (magicNumber >= 42) {
-      LitActions.setResponse({ response: "The number is greater than or equal to 42!" });
-    } else {
-      LitActions.setResponse({ response: "The number is less than 42!" });
-    }
-  };
-
-  const litActionCode = `(${_litActionCode.toString()})();`;
-  return litActionCode;
-};
-
-// New function to create access control conditions
 const createAccessControlConditions = () => {
   return [
     {
-      contractAddress: "",
-      standardContractType: "",
-      chain: "ethereum",
-      method: "eth_getBalance",
-      parameters: [":userAddress", "latest"],
+      contractAddress: '',
+      standardContractType: '',
+      chain: 'ethereum',
+      method: 'eth_getBalance',
+      parameters: [':userAddress', 'latest'],
       returnValueTest: {
-        comparator: ">=",
-        value: "1000000000000", // 0.000001 ETH
+        comparator: '>=',
+        value: '1000000000000', // 0.000001 ETH
       },
     },
   ];
@@ -109,76 +71,13 @@ app.post('/encrypt', async (req, res) => {
 
     console.log('Number encrypted successfully');
 
-    res.json({ 
+    res.json({
       ciphertext: Buffer.from(ciphertext).toString('base64'),
-      dataToEncryptHash: Buffer.from(dataToEncryptHash).toString('hex')
+      dataToEncryptHash: Buffer.from(dataToEncryptHash).toString('hex'),
     });
   } catch (error) {
     console.error('Failed to encrypt number:', error);
     res.status(500).json({ error: 'Failed to encrypt number' });
-  }
-});
-
-// Existing API Endpoint to Execute Lit Action
-app.post('/execute', async (req, res) => {
-  const { magicNumber } = req.body;
-
-  if (magicNumber === undefined) {
-    return res.status(400).json({ error: 'magicNumber is required' });
-  }
-
-  try {
-    // Initialize Lit Client and Wallet
-    const litNodeClient = await initializeLitClient();
-    const ethersWallet = initializeWallet();
-
-    // Generate Session Signatures
-    const sessionSignatures = await litNodeClient.getSessionSigs({
-      chain: 'ethereum',
-      expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(),
-      resourceAbilityRequests: [
-        {
-          resource: new LitActionResource('*'),
-          ability: LitAbility.LitActionExecution,
-        },
-      ],
-      authNeededCallback: async ({ uri, expiration, resourceAbilityRequests }) => {
-        const siweMessage = await createSiweMessage({
-          uri,
-          expiration,
-          resources: resourceAbilityRequests,
-          walletAddress: await ethersWallet.getAddress(),
-          nonce: await litNodeClient.getLatestBlockhash(),
-          litNodeClient,
-        });
-
-        const authSig = await generateAuthSig({
-          signer: ethersWallet,
-          toSign: siweMessage,
-        });
-
-        return authSig;
-      },
-    });
-
-    // Define Lit Action Code
-    const litActionCode = defineLitAction();
-
-    // Execute Lit Action
-    const response = await litNodeClient.executeJs({
-      sessionSigs: sessionSignatures,
-      code: litActionCode,
-      jsParams: {
-        magicNumber: parseInt(magicNumber, 10),
-      },
-    });
-
-    console.log('Lit Action executed successfully:', response);
-
-    res.json({ response: response.response });
-  } catch (error) {
-    console.error('Failed to execute Lit Action:', error);
-    res.status(500).json({ error: 'Failed to execute Lit Action' });
   }
 });
 
