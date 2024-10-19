@@ -39,8 +39,8 @@ const initializeWallet = () => {
 const initializeLitClient = async () => {
   try {
     const litNodeClient = new LitNodeClient({
-      litNetwork: LitNetwork.DatilDev, // Use DatilDev for development
-      debug: true, // Enable debug for more detailed logs
+      litNetwork: LitNetwork.DatilDev,
+      debug: true,
     });
 
     await litNodeClient.connect();
@@ -65,7 +65,61 @@ const defineLitAction = () => {
   return litActionCode;
 };
 
-// API Endpoint to Execute Lit Action
+// New function to create access control conditions
+const createAccessControlConditions = () => {
+  return [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain: "ethereum",
+      method: "eth_getBalance",
+      parameters: [":userAddress", "latest"],
+      returnValueTest: {
+        comparator: ">=",
+        value: "1000000000000", // 0.000001 ETH
+      },
+    },
+  ];
+};
+
+// API Endpoint to Encrypt Number
+app.post('/encrypt', async (req, res) => {
+  const { number } = req.body;
+
+  if (number === undefined) {
+    return res.status(400).json({ error: 'number is required' });
+  }
+
+  try {
+    // Initialize Lit Client
+    const litNodeClient = await initializeLitClient();
+
+    // Create access control conditions
+    const accessControlConditions = createAccessControlConditions();
+
+    // Convert number to string and then to Uint8Array
+    const dataToEncrypt = new TextEncoder().encode(number.toString());
+
+    // Encrypt the number
+    const { ciphertext, dataToEncryptHash } = await litNodeClient.encrypt({
+      accessControlConditions,
+      chain: 'ethereum',
+      dataToEncrypt,
+    });
+
+    console.log('Number encrypted successfully');
+
+    res.json({ 
+      ciphertext: Buffer.from(ciphertext).toString('base64'),
+      dataToEncryptHash: Buffer.from(dataToEncryptHash).toString('hex')
+    });
+  } catch (error) {
+    console.error('Failed to encrypt number:', error);
+    res.status(500).json({ error: 'Failed to encrypt number' });
+  }
+});
+
+// Existing API Endpoint to Execute Lit Action
 app.post('/execute', async (req, res) => {
   const { magicNumber } = req.body;
 
@@ -81,11 +135,11 @@ app.post('/execute', async (req, res) => {
     // Generate Session Signatures
     const sessionSignatures = await litNodeClient.getSessionSigs({
       chain: 'ethereum',
-      expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(), // 10 minutes from now
+      expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(),
       resourceAbilityRequests: [
         {
-          resource: new LitActionResource('*'), // Request access to all resources
-          ability: LitAbility.LitActionExecution, // Ability to execute Lit Actions
+          resource: new LitActionResource('*'),
+          ability: LitAbility.LitActionExecution,
         },
       ],
       authNeededCallback: async ({ uri, expiration, resourceAbilityRequests }) => {
@@ -115,7 +169,7 @@ app.post('/execute', async (req, res) => {
       sessionSigs: sessionSignatures,
       code: litActionCode,
       jsParams: {
-        magicNumber: parseInt(magicNumber, 10), // Ensure it's a number
+        magicNumber: parseInt(magicNumber, 10),
       },
     });
 

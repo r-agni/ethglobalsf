@@ -1,9 +1,8 @@
-/* App.css */
-
 .App {
   font-family: Arial, sans-serif;
   text-align: center;
   padding: 50px;
+  color: black; /* Added */
 }
 
 .card {
@@ -12,6 +11,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: inline-block;
+  color: black; /* Added */
 }
 
 input {
@@ -36,6 +36,7 @@ button:disabled {
 
 .response, .error {
   margin-top: 20px;
+  color: black; /* Added */
 }
 
 .error p {
