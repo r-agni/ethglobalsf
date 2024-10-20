@@ -27,7 +27,10 @@ Salus empowers individuals to monetize health data, promotes medical research, a
 A more detailed description of Salus can be found in the draft of the [Salus Whitepaper](https://github.com/user-attachments/files/17450344/Salus_whitepaper.1.pdf)
 
 ## Tech Stack
-
+- Encrypting the data, running the computation, and decrytpting the data: LIT TEE
+- User authentication and wallet for cashbacks and rewards: Privy.io
+- Backend: Typescript, Node.js, Express
+- Frontend: React
 
 ## Getting Started
 
