@@ -1,0 +1,30 @@
+{
+    "name": "@types/tv4",
+    "version": "1.2.33",
+    "description": "TypeScript definitions for tv4",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/tv4",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Bart van der Schoor",
+            "githubUsername": "Bartvds",
+            "url": "https://github.com/Bartvds"
+        },
+        {
+            "name": "Peter Snider",
+            "githubUsername": "psnider",
+            "url": "https://github.com/psnider"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/tv4"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typesPublisherContentHash": "a48295969688294e8ca7e3ab81d2ccb299c3b8f557ad763452faff8b402fcd31",
+    "typeScriptVersion": "4.5"
+}
