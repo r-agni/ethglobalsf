@@ -61,7 +61,7 @@ export default function HealthDataPage() {
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       setError('Please select a file to upload.');
       return;
@@ -69,17 +69,60 @@ export default function HealthDataPage() {
 
     setError('');
     setSuccess('');
+    setConfirmation(''); // Reset confirmation message on new upload
+    setLoading(true); // Show loading indicator
 
-    // Simulate file upload and data processing
-    const newHealthScore = Math.floor(Math.random() * 100);
-    const newImprovementTips = 'Exercise regularly and maintain a balanced diet.';
-    const newInsuranceRebate = Math.floor(Math.random() * 1000);
+    // Simulate processing delay
+    setTimeout(async () => {
+      try {
+        const text = await file.text(); // Read the file as text
+        const data = JSON.parse(text); // Parse the JSON string to an object
 
-    setHealthScore(newHealthScore);
-    setImprovementTips(newImprovementTips);
-    setInsuranceRebate(newInsuranceRebate);
+        // Assuming the JSON structure has the required fields
+        const { heartRate, steps, calories, activeTime, sleepTime, bloodOxygen, bloodPressure } = data;
 
-    setSuccess('Medical data processed successfully.');
+        // Store the parsed data in state
+        setHealthData({
+          heartRate,
+          steps,
+          calories,
+          activeTime,
+          sleepTime,
+          bloodOxygen,
+          bloodPressure,
+        });
+
+        // Simulate health score and insurance rebate calculations
+        const newHealthScore = Math.floor(Math.random() * 100);
+        const newImprovementTips = 'Exercise regularly and maintain a balanced diet.';
+        const newInsuranceRebate = Math.floor(Math.random() * 1000);
+
+        setHealthScore(newHealthScore);
+        setImprovementTips(newImprovementTips);
+        setInsuranceRebate(newInsuranceRebate);
+
+        setSuccess('Medical data processed successfully.'); // Success message for processing
+      } catch (err) {
+        setError('Error parsing file. Please ensure it is a valid JSON file.');
+      } finally {
+        setLoading(false); // Hide loading indicator
+      }
+    }, 2000); // 2 seconds delay
+  };
+
+  const handleSubmit = () => {
+    if (healthData) {
+      setLoading(true); // Show loading indicator
+
+      // Simulating submission confirmation with a delay
+      setTimeout(() => {
+        setConfirmation('Data has been successfully submitted.');
+        setSuccess(''); // Reset success message after submission
+        setLoading(false); // Hide loading indicator
+      }, 2000); // 2 seconds delay
+    } else {
+      setError('No health data to submit.');
+    }
   };
 
   return (
@@ -95,11 +138,24 @@ export default function HealthDataPage() {
           />
           <button 
             onClick={handleUpload} 
-            className="bg-red-500 text-white hover:bg-red-600 py-2 px-4 rounded"
+            className="bg-red-500 text-white hover:bg-red-600 py-2 px-4 rounded mb-4"
           >
             Process Data
           </button>
+          <button 
+            onClick={handleSubmit} 
+            className="bg-blue-500 text-white hover:bg-blue-600 py-2 px-4 rounded"
+          >
+            Submit Data
+          </button>
         </div>
+
+        {loading && (
+          <div className="bg-gray-100 border border-gray-300 text-gray-700 rounded-lg p-4 mb-8 flex items-center justify-center">
+            <div className="loader mr-2"></div>
+            <span>Processing...</span>
+          </div>
+        )}
 
         {/* New section to input address and call the Lit function */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
@@ -119,25 +175,54 @@ export default function HealthDataPage() {
           </button>
         </div>
 
+        {loading && (
+          <div className="bg-gray-100 border border-gray-300 text-gray-700 rounded-lg p-4 mb-8 flex items-center justify-center">
+            <div className="loader mr-2"></div>
+            <span>Processing...</span>
+          </div>
+        )}
+
         {/* Existing code to display results */}
         {healthScore !== null && (
           <div className="bg-white shadow-md rounded-lg p-6 mb-8">
             <h2 className="text-xl font-bold mb-2">Health Score</h2>
-            <p className="text-4xl font-bold">{healthScore}</p>
+            <p className="text-4xl font-bold">3/10</p>
           </div>
         )}
 
         {improvementTips && (
           <div className="bg-white shadow-md rounded-lg p-6 mb-8">
             <h2 className="text-xl font-bold mb-2">Improvement Tips</h2>
-            <p>{improvementTips}</p>
+            <p>To improve your health, aim to increase your daily physical activity to at least 30 minutes and gradually work towards 10,000 steps per day. Additionally, prioritize getting 7-9 hours of quality sleep each night and maintain a balanced diet to help regulate your blood pressure and energy levels.</p>
           </div>
         )}
 
         {insuranceRebate !== null && (
+          <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex justify-between">
+            <div className="flex-1 pr-2">
+              <h2 className="text-xl font-bold mb-2">Insurance Rebate (USDC)</h2>
+              <p className="text-2xl font-bold">$3</p>
+            </div>
+            <div className="flex-1 pl-2 border-l border-gray-300">
+              <h2 className="text-xl font-bold mb-2">Salus Rewards Pool</h2>
+              <p className="text-2xl font-bold">$50</p>
+            </div>
+          </div>
+        )}
+
+        {/* Display health data if available */}
+        {healthData && (
           <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-            <h2 className="text-xl font-bold mb-2">Insurance Rebate (USDC)</h2>
-            <p className="text-2xl font-bold">${insuranceRebate}</p>
+            <h2 className="text-xl font-bold mb-2">Health Data</h2>
+            <ul className="list-disc list-inside">
+              <li><strong>Heart Rate:</strong> {healthData.heartRate} bpm</li>
+              <li><strong>Steps:</strong> {healthData.steps} steps</li>
+              <li><strong>Calories:</strong> {healthData.calories} kcal</li>
+              <li><strong>Active Time:</strong> {healthData.activeTime} minutes</li>
+              <li><strong>Sleep Time:</strong> {healthData.sleepTime} hours</li>
+              <li><strong>Blood Oxygen:</strong> {healthData.bloodOxygen}%</li>
+              <li><strong>Blood Pressure:</strong> {healthData.bloodPressure} mmHg</li>
+            </ul>
           </div>
         )}
 
@@ -154,7 +239,30 @@ export default function HealthDataPage() {
             <p>{success}</p>
           </div>
         )}
+
+        {confirmation && (
+          <div className="bg-blue-100 border border-blue-400 text-blue-700 rounded-lg p-4 mb-8">
+            <h3 className="font-bold">Confirmation</h3>
+            <p>{confirmation}</p>
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        .loader {
+          border: 4px solid rgba(255, 255, 255, 0.3);
+          border-top: 4px solid #3498db; /* Blue color */
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
