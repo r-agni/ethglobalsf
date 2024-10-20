@@ -9,11 +9,11 @@ export default function HealthDataPage() {
   const [insuranceRebate, setInsuranceRebate] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  // Add state for user's address
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [confirmation, setConfirmation] = useState(''); // Add confirmation state
+  const [healthData, setHealthData] = useState(null); // Add health data state
   const [userAddress, setUserAddress] = useState('');
 
-  // Function to handle calling the Lit encryption function
   const handleLitFunction = async () => {
     if (!userAddress) {
       setError('Please enter your address.');
@@ -30,7 +30,6 @@ export default function HealthDataPage() {
     setSuccess('');
 
     try {
-      // Call your backend API route that executes the Lit function
       const response = await fetch('/api/postLit/', {
         method: 'POST',
         headers: {
@@ -48,14 +47,15 @@ export default function HealthDataPage() {
 
       const resultData = await response.json();
 
-      // Handle the response as needed
       setSuccess('Lit function executed successfully.');
       console.log('Lit function response:', resultData);
 
     } catch (error) {
       setError(error.message);
     }
-  };  const handleFileChange = (e) => {
+  };
+
+  const handleFileChange = (e) => {
     if (e.target.files[0]) {
       setFile(e.target.files[0]);
     }
@@ -69,19 +69,16 @@ export default function HealthDataPage() {
 
     setError('');
     setSuccess('');
-    setConfirmation(''); // Reset confirmation message on new upload
-    setLoading(true); // Show loading indicator
+    setConfirmation('');
+    setLoading(true);
 
-    // Simulate processing delay
     setTimeout(async () => {
       try {
-        const text = await file.text(); // Read the file as text
-        const data = JSON.parse(text); // Parse the JSON string to an object
+        const text = await file.text();
+        const data = JSON.parse(text);
 
-        // Assuming the JSON structure has the required fields
         const { heartRate, steps, calories, activeTime, sleepTime, bloodOxygen, bloodPressure } = data;
 
-        // Store the parsed data in state
         setHealthData({
           heartRate,
           steps,
@@ -92,7 +89,6 @@ export default function HealthDataPage() {
           bloodPressure,
         });
 
-        // Simulate health score and insurance rebate calculations
         const newHealthScore = Math.floor(Math.random() * 100);
         const newImprovementTips = 'Exercise regularly and maintain a balanced diet.';
         const newInsuranceRebate = Math.floor(Math.random() * 1000);
@@ -101,24 +97,23 @@ export default function HealthDataPage() {
         setImprovementTips(newImprovementTips);
         setInsuranceRebate(newInsuranceRebate);
 
-        setSuccess('Medical data processed successfully.'); // Success message for processing
+        setSuccess('Medical data processed successfully.');
       } catch (err) {
         setError('Error parsing file. Please ensure it is a valid JSON file.');
       } finally {
-        setLoading(false); // Hide loading indicator
+        setLoading(false);
       }
     }, 2000); // 2 seconds delay
   };
 
   const handleSubmit = () => {
     if (healthData) {
-      setLoading(true); // Show loading indicator
+      setLoading(true);
 
-      // Simulating submission confirmation with a delay
       setTimeout(() => {
         setConfirmation('Data has been successfully submitted.');
-        setSuccess(''); // Reset success message after submission
-        setLoading(false); // Hide loading indicator
+        setSuccess('');
+        setLoading(false);
       }, 2000); // 2 seconds delay
     } else {
       setError('No health data to submit.');
@@ -128,7 +123,6 @@ export default function HealthDataPage() {
   return (
     <div className="font-poppins min-h-screen bg-gradient-to-tl from-red-600/95 via-red-400/40 via-65% to-transparent p-8">
       <div className="max-w-2xl mx-auto">
-        {/* Existing code for uploading medical data */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-bold mb-4">Upload Medical Data</h2>
           <input 
@@ -157,7 +151,6 @@ export default function HealthDataPage() {
           </div>
         )}
 
-        {/* New section to input address and call the Lit function */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-bold mb-4">Receive Payment</h2>
           <input
@@ -182,18 +175,17 @@ export default function HealthDataPage() {
           </div>
         )}
 
-        {/* Existing code to display results */}
         {healthScore !== null && (
           <div className="bg-white shadow-md rounded-lg p-6 mb-8">
             <h2 className="text-xl font-bold mb-2">Health Score</h2>
-            <p className="text-4xl font-bold">3/10</p>
+            <p className="text-4xl font-bold">{healthScore}/10</p> {/* Dynamic health score */}
           </div>
         )}
 
         {improvementTips && (
           <div className="bg-white shadow-md rounded-lg p-6 mb-8">
             <h2 className="text-xl font-bold mb-2">Improvement Tips</h2>
-            <p>To improve your health, aim to increase your daily physical activity to at least 30 minutes and gradually work towards 10,000 steps per day. Additionally, prioritize getting 7-9 hours of quality sleep each night and maintain a balanced diet to help regulate your blood pressure and energy levels.</p>
+            <p>{improvementTips}</p> {/* Dynamic improvement tips */}
           </div>
         )}
 
@@ -201,7 +193,7 @@ export default function HealthDataPage() {
           <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex justify-between">
             <div className="flex-1 pr-2">
               <h2 className="text-xl font-bold mb-2">Insurance Rebate (USDC)</h2>
-              <p className="text-2xl font-bold">$3</p>
+              <p className="text-2xl font-bold">${insuranceRebate}</p> {/* Dynamic insurance rebate */}
             </div>
             <div className="flex-1 pl-2 border-l border-gray-300">
               <h2 className="text-xl font-bold mb-2">Salus Rewards Pool</h2>
@@ -210,7 +202,6 @@ export default function HealthDataPage() {
           </div>
         )}
 
-        {/* Display health data if available */}
         {healthData && (
           <div className="bg-white shadow-md rounded-lg p-6 mb-8">
             <h2 className="text-xl font-bold mb-2">Health Data</h2>
