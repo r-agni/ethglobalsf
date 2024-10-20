@@ -1,6 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Users, Activity, Clipboard, TrendingUp } from 'lucide-react';
 
 const data = [
@@ -13,22 +11,47 @@ const data = [
 ];
 
 const StatCard = ({ title, value, icon: Icon }) => (
-  <Card>
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <Icon className="h-4 w-4 text-muted-foreground" />
-    </CardHeader>
-    <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
-    </CardContent>
-  </Card>
+  <div className="bg-white shadow-md rounded-lg p-4 flex flex-col justify-between">
+    <div className="flex flex-row items-center justify-between pb-2">
+      <h3 className="text-sm font-medium">{title}</h3>
+      <Icon className="h-4 w-4 text-gray-500" />
+    </div>
+    <div className="text-2xl font-bold">{value}</div>
+  </div>
 );
+
+const BarChart = ({ data }) => {
+  // Determine the maximum value for scaling the bars
+  const maxPatients = Math.max(...data.map(item => item.patients));
+
+  return (
+    <div className="flex flex-col items-center">
+      <h2 className="text-lg font-bold mb-4">Patient Admissions</h2>
+      <div className="flex flex-row items-end mb-2" style={{ height: '300px', width: '100%' }}>
+        {data.map((entry, index) => (
+          <div key={index} className="flex flex-col items-center" style={{ width: '100%' }}>
+            <div
+              className="bg-blue-600"
+              style={{
+                height: `${(entry.patients / maxPatients) * 100}%`,
+                width: '30px',
+                margin: '0 5px',
+                transition: 'height 0.3s ease'
+              }}
+            ></div>
+            <span className="text-sm">{entry.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default function HealthcareDashboard() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Healthcare Dashboard</h1>
-      
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <StatCard title="Total Patients" value="1,234" icon={Users} />
         <StatCard title="Average Heart Rate" value="72 bpm" icon={Activity} />
@@ -36,51 +59,33 @@ export default function HealthcareDashboard() {
         <StatCard title="Recovery Rate" value="95%" icon={TrendingUp} />
       </div>
 
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Patient Admissions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="patients" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      <div className="bg-white shadow-md rounded-lg mb-8 p-4">
+        <BarChart data={data} />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Patients</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="p-4">
+            <h2 className="text-lg font-bold mb-2">Recent Patients</h2>
             <ul className="space-y-2">
               <li>John Doe - Admitted: 2023-10-15</li>
               <li>Jane Smith - Admitted: 2023-10-14</li>
               <li>Bob Johnson - Admitted: 2023-10-13</li>
               <li>Alice Brown - Admitted: 2023-10-12</li>
             </ul>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Department Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
+          </div>
+        </div>
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="p-4">
+            <h2 className="text-lg font-bold mb-2">Department Performance</h2>
             <ul className="space-y-2">
               <li>Cardiology - 98% patient satisfaction</li>
               <li>Neurology - 95% patient satisfaction</li>
               <li>Oncology - 97% patient satisfaction</li>
               <li>Pediatrics - 99% patient satisfaction</li>
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

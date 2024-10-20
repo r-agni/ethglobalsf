@@ -5,8 +5,6 @@ import "../globals.css";
 import { UserCircleIcon } from "@heroicons/react/16/solid";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { EventsProvider } from "../../lib/eventsContext";
-import { auth } from "../../lib/firebaseConfig";
 import {
   Menu,
   MenuButton,
@@ -37,7 +35,8 @@ export default function HomeLayout({ children }) {
 
   const handleSignOut = () => {
     sessionStorage.clear();
-    auth.signOut();
+    // Assuming you might have a function to handle sign out.
+    // signOut(); 
     router.push("/");
   };
 
@@ -52,8 +51,8 @@ export default function HomeLayout({ children }) {
                   <div className="text-logo-purple flex-shrink-0">
                     <img
                       className="max-w-24 sm:max-w-28 md:max-w-32 lg:max-w-36 h-auto"
-                      src="/name.png"
-                      alt="Company Logo"
+                      src="/salus-logo.png" // Update the logo source
+                      alt="Salus Tech Logo"
                     />
                   </div>
                 </Link>
@@ -109,14 +108,14 @@ export default function HomeLayout({ children }) {
         <div className="flex-grow">{children}</div>
         <div className="grid grid-cols-3 text-xs sm:text-sm px-5 py-5 text-off-white bg-logo-purple/85 h-24">
           <div className="flex flex-col items-start justify-center">
-            <div className="pb-1">@2024 Kinetik Tech, LLC.</div>
+            <div className="pb-1">@2024 Salus Tech, LLC.</div>
             <div>All Rights Reserved.</div>
           </div>
           <div className="flex flex-col items-center justify-center">
             <div className="pb-2">Follow us at</div>
             <div className="flex">
               <a
-                href="https://www.instagram.com/kinetikgigs/"
+                href="https://www.instagram.com/salustech/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -126,7 +125,7 @@ export default function HomeLayout({ children }) {
           </div>
           <div className="flex flex-col items-end justify-center">
             <div className="pb-1">Contact us at</div>
-            <div>info@kinetikgigs.com</div>
+            <div>info@salustech.com</div>
           </div>
         </div>
       </div>
