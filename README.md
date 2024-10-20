@@ -2,9 +2,6 @@
 
 #Setup
 1. Add private key to `nodejs/.env` file
-```
-ETHEREUM_PRIVATE_KEY = "dsjnsdfpniksdafkjsdfnlksdflnksdfdlkmasdnoin"
-```
 2. Run:
 ```
 cd nodejs
