@@ -14,13 +14,13 @@ export default function LandingPage() {
           <div className="text-red-600 flex-shrink-0">
             <img
               className="w-full max-w-24 sm:max-w-28 md:max-w-32 lg:max-w-36 h-auto"
-              src="/name.png"
+              src="/ethglobalsf/Salus/app/assets/salus-logo.png"
               alt="DeFi Insurance Logo"
             />
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 text-red-600 sm:text-lg text-sm">
             <Link
-              href="/login"
+              href="/learnmore"
               className="font-normal bg-red-600/70 text-off-white px-6 py-2 rounded-2xl hover:bg-red-600/90 transition duration-300 h-fit sm:order-1"
             >
               Learn More

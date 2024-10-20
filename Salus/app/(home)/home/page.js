@@ -49,7 +49,7 @@ export default function HomeLayout({ children }) {
               <Link href="/home">
                 <img
                   className="h-10 w-auto"
-                  src="/salus-logo.png"
+                  src="/ethglobalsf/Salus/app/assets/salus-logo.png"
                   alt="Salus Tech Logo"
                 />
               </Link>
