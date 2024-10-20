@@ -38,6 +38,7 @@ export default function HealthDataPage() {
   };
 
   return (
+    
     <div className="font-poppins min-h-screen bg-gradient-to-tl from-red-600/95 via-red-400/40 via-65% to-transparent p-8">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">

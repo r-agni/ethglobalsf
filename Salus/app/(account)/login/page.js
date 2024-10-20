@@ -1,43 +1,58 @@
 "use client";
 import Link from "next/link";
 import { HomeIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { PrivyProvider, usePrivy } from '@privy-io/react-auth';
 
-export default function WalletConnectPage() {
+function WalletConnectPage() {
   const [error, setError] = useState("");
+  const [userType, setUserType] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
+  const { login, logout, authenticated, ready, user } = usePrivy();
 
-  const handleWalletConnect = async (userType) => {
+  useEffect(() => {
+    if (authenticated && userType && user && isLoggingIn) {
+      handleRedirect();
+    }
+  }, [authenticated, userType, user, isLoggingIn]);
+
+  const handleWalletConnect = async (type) => {
+    setError("");
+    setUserType(type);
+    setIsLoggingIn(true);
     try {
-      // Placeholder for wallet connection logic (e.g., using MetaMask)
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-      
-        
-        sessionStorage.setItem("userType", userType);
-        setError("");
-        if (userType === "User") {
-          router.push("/info");
-          // Store the user's address in sessionStorage
-          if (accounts.length > 0) {
-            sessionStorage.setItem("userAddress", accounts[0]);
-          }
-        } else {
-          router.push("/home");
-          if (accounts.length > 0) {
-            sessionStorage.setItem("companyAddress", accounts[0]);
-          }
-        }
-      } else {
-        setError("MetaMask is not installed.");
-      }
+      await logout();
+      await login();
     } catch (error) {
-      setError(error.message);
+      setError("Failed to initiate login process. Please try again.");
+      setIsLoggingIn(false);
     }
   };
+
+  const handleRedirect = () => {
+    if (user && user.wallet) {
+      const walletAddress = user.wallet.address;
+      sessionStorage.setItem("userType", userType);
+      sessionStorage.setItem("walletAddress", walletAddress);
+      
+      if (userType === "User") {
+        sessionStorage.setItem("userAddress", walletAddress);
+        router.push("/info");
+      } else {
+        sessionStorage.setItem("companyAddress", walletAddress);
+        router.push("/home");
+      }
+    } else {
+      setError("Failed to retrieve wallet address. Please try connecting again.");
+    }
+    setIsLoggingIn(false);
+  };
+
+  if (!ready) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-bl from-red-600 via-red-400 via-70% to-transparent">
@@ -56,15 +71,17 @@ export default function WalletConnectPage() {
           <div className="space-y-4">
             <button
               onClick={() => handleWalletConnect("User")}
-              className="flex w-full justify-center rounded-md bg-red-700 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ring-red-600"
+              disabled={isLoggingIn}
+              className="flex w-full justify-center rounded-md bg-red-700 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ring-red-600 disabled:opacity-50"
             >
-              Connect as User
+              {isLoggingIn ? "Connecting..." : "Connect as User"}
             </button>
             <button
               onClick={() => handleWalletConnect("Company")}
-              className="flex w-full justify-center rounded-md bg-red-700 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ring-red-600"
+              disabled={isLoggingIn}
+              className="flex w-full justify-center rounded-md bg-red-700 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ring-red-600 disabled:opacity-50"
             >
-              Connect as Company
+              {isLoggingIn ? "Connecting..." : "Connect as Company"}
             </button>
             {error && (
               <p className="text-red-200 font-medium text-sm text-center">
@@ -75,5 +92,25 @@ export default function WalletConnectPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PrivyWrapper() {
+  return (
+    <PrivyProvider
+      appId="cm2h6nthq00nt1n0qs20hduz3"
+      config={{
+        appearance: {
+          theme: 'light',
+          accentColor: '#DC2626', // Matching the red theme
+          logo: 'https://your-logo-url', // Replace with your actual logo URL
+        },
+        embeddedWallets: {
+          createOnLogin: 'users-without-wallets',
+        },
+      }}
+    >
+      <WalletConnectPage />
+    </PrivyProvider>
   );
 }
