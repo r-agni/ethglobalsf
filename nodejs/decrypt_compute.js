@@ -3,7 +3,7 @@ globalThis.crypto ??= require("crypto").webcrypto;
 const { LitNodeClient } = require('@lit-protocol/lit-node-client');
 const { LitNetwork } = require('@lit-protocol/constants');
 const fs = require('fs');
-const { spawnSync } = require('child_process');
+const { reEncryptDataWithCKKS, computeHealthScore } = require('./utils/reencryptCompute');
 
 // Function to initialize LitNodeClient
 const initializeLitClient = async () => {
@@ -46,52 +46,12 @@ const processHealthData = async (ciphertext, accessControlConditions, authSig) =
     // Step 2: Decrypt data using Lit Protocol (within SEV-SNP)
     const decryptedData = await decryptData(litNodeClient, accessControlConditions, ciphertext, authSig);
 
-    // Step 3: Re-encrypt data with CKKS using TenSEAL
-    const reEncryptDataWithCKKS = (data) => {
-      try {
-        const pythonProcess = spawnSync('python3', ['reencrypt_ckks.py'], {
-          input: JSON.stringify(data),
-        });
-        if (pythonProcess.error) {
-          throw pythonProcess.error;
-        }
-        const output = pythonProcess.stdout.toString();
-        return JSON.parse(output);
-      } catch (error) {
-        console.error('Failed to re-encrypt data with CKKS:', error);
-        throw error;
-      }
-    };
-
-    const { encrypted_data: reEncryptedData, context } = reEncryptDataWithCKKS(decryptedData);
+    // Step 3: Re-encrypt data with CKKS using TypeScript implementation
+    const { encryptedData: reEncryptedData, context } = await reEncryptDataWithCKKS(decryptedData);
 
     // Step 4: Compute health score using re-encrypted data
-    const computeHealthScore = (encryptedData, context) => {
-      try {
-        console.log('Health score computation with encrypted data in progress...');
-        const healthMetrics = [
-          encryptedData.heart_rate,
-          encryptedData.respiratory_rate,
-          encryptedData.vo2_max,
-          encryptedData.resting_heart_rate,
-          encryptedData.active_energy_burned,
-          encryptedData.bmi,
-        ];
-        const pythonProcess = spawnSync('python3', ['compute_health_score.py'], {
-          input: JSON.stringify({ encrypted_data: healthMetrics, context }),
-        });
-        if (pythonProcess.error) {
-          throw pythonProcess.error;
-        }
-        const healthScore = pythonProcess.stdout.toString();
-        return healthScore;
-      } catch (error) {
-        console.error('Failed to compute health score:', error);
-        throw error;
-      }
-    };
+    const healthScore = await computeHealthScore(reEncryptedData, context);
 
-    const healthScore = computeHealthScore(reEncryptedData, context);
     console.log('Health score:', healthScore);
   } catch (error) {
     console.error('Error in processing health data:', error);
