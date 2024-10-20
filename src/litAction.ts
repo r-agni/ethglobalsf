@@ -11,7 +11,10 @@ const _litActionCode = async () => {
     });
 
     const decryptedJson = JSON.parse(decryptedJsonString);
-    const { privateKey, rpcUrl, recipient } = decryptedJson;
+    const { privateKey, rpcUrl, recipient, heartRate, steps, calories, activeTime, sleepTime, bloodOxygen, bloodPressure } = decryptedJson;
+
+    // Sum all numeric values in the decrypted JSON
+    const total = heartRate + steps + calories + activeTime + sleepTime + bloodOxygen + bloodPressure;
 
     // Use ethers.js v5 syntax for provider
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -32,7 +35,6 @@ const _litActionCode = async () => {
     const decimals = await usdcContract.decimals();
 
     const amountInUnits = '1';
-
     const amountInWei = ethers.utils.parseUnits(amountInUnits, decimals);
 
     let res = await Lit.Actions.runOnce({ waitForResponse: true, name: "txnSender" }, async () => {
@@ -43,11 +45,13 @@ const _litActionCode = async () => {
         
         await txResponse.wait();
         return 'Transaction successful';
-
     });
 
-
-    Lit.Actions.setResponse({ response: 'Transaction successful' });
+    // Return both transaction response and the sum of the values
+    Lit.Actions.setResponse({
+      response: `1) Transaction successful. 2) Health Score: ${total%10} 3) Insurance Rebate: ${total * 0.01} 4) Salus Pool: ${total * 0.05}`
+    });
+    
   } catch (e) {
     Lit.Actions.setResponse({ response: e.message });
   }

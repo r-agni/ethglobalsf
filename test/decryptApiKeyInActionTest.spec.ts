@@ -17,6 +17,13 @@ describe("encryptJsonFile", () => {
       privateKey: PRIVATE_KEY,
       rpcUrl: RPC_URL,
       recipient: RECIPIENT,
+      "heartRate": 95,
+      "steps": 2000,
+      "calories": 3500,
+      "activeTime": 30,
+      "sleepTime": 4,
+      "bloodOxygen": 90,
+      "bloodPressure": 140
     };
 
 
