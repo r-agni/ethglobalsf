@@ -1,0 +1,28 @@
+{
+    "name": "@types/chai-json-schema",
+    "version": "1.4.10",
+    "description": "TypeScript definitions for chai-json-schema",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/chai-json-schema",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Ulrich Heiniger",
+            "githubUsername": "ulrichheiniger",
+            "url": "https://github.com/ulrichheiniger"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/chai-json-schema"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/chai": "*",
+        "@types/tv4": "*"
+    },
+    "typesPublisherContentHash": "0badb2197450fdb506150091eae36dd80a1b5138872cd9bdd5c20ee4e94f1142",
+    "typeScriptVersion": "4.6"
+}

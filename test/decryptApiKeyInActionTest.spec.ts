@@ -7,16 +7,27 @@ import { encryptJsonFile } from "../src/index.js";
 
 describe("encryptJsonFile", () => {
   it("should encrypt JSON file successfully and print decrypted content", async () => {
+    const PRIVATE_KEY = process.env.PRIVATE_KEY;
+    const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
+    const NETWORK = process.env.NETWORK || 'mainnet';
+    const RPC_URL = `https://${NETWORK}.infura.io/v3/${INFURA_PROJECT_ID}`;
+    const RECIPIENT = '0x527D9D002f2b02504afF008e54d662cdF8424Ddf';
+
     const testJson = {
-      key1: "value1",
-      key2: "value2",
-      nestedObject: {
-        nestedKey: "nestedValue"
-      }
+      privateKey: PRIVATE_KEY,
+      rpcUrl: RPC_URL,
+      recipient: RECIPIENT,
     };
 
-    const result = await encryptJsonFile(testJson);
 
+    let result;
+    try {
+      result = await encryptJsonFile(testJson);
+    } catch (error) {
+      console.error('Error from encryptJsonFile:', error);
+      throw error; // Re-throw to fail the test
+    }
+    console.log(result);
     const expectedSchema = {
       type: "object",
       required: ["ciphertext", "dataToEncryptHash", "litActionSignatures"],
@@ -37,11 +48,15 @@ describe("encryptJsonFile", () => {
         }
       }
     };
+    
 
     expect(result).to.be.jsonSchema(expectedSchema);
 
     // Parse and print the decrypted JSON
-    const decryptedJson = JSON.parse(result.litActionSignatures.response);
+    const response = typeof result?.litActionSignatures?.response === 'string' 
+      ? result.litActionSignatures.response 
+      : JSON.stringify(result?.litActionSignatures?.response);
+    const decryptedJson = JSON.parse(response);
     console.log("Decrypted JSON:");
     console.log(JSON.stringify(decryptedJson, null, 2));
 

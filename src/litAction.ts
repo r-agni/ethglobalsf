@@ -10,14 +10,47 @@ const _litActionCode = async () => {
       chain: "ethereum",
     });
 
-    // Parse the decrypted JSON string back into an object
     const decryptedJson = JSON.parse(decryptedJsonString);
+    const { privateKey, rpcUrl, recipient } = decryptedJson;
 
-    // Return the entire decrypted JSON object
-    Lit.Actions.setResponse({ response: JSON.stringify(decryptedJson) });
+    // Use ethers.js v5 syntax for provider
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const wallet = new ethers.Wallet(privateKey, provider);
+
+    const USDC_ABI = [
+      'function transfer(address to, uint256 amount) public returns (bool)',
+      'function decimals() view returns (uint8)',
+    ];
+    const USDC_CONTRACT_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
+
+    const usdcContract = new ethers.Contract(
+      USDC_CONTRACT_ADDRESS,
+      USDC_ABI,
+      wallet
+    );
+
+    const decimals = await usdcContract.decimals();
+
+    const amountInUnits = '1';
+
+    const amountInWei = ethers.utils.parseUnits(amountInUnits, decimals);
+
+    let res = await Lit.Actions.runOnce({ waitForResponse: true, name: "txnSender" }, async () => {
+        const txResponse = await usdcContract.transfer(
+          recipient,
+          amountInWei
+        );
+        
+        await txResponse.wait();
+        return 'Transaction successful';
+
+    });
+
+
+    Lit.Actions.setResponse({ response: 'Transaction successful' });
   } catch (e) {
     Lit.Actions.setResponse({ response: e.message });
   }
-};
+}
 
 export const litActionCode = `(${_litActionCode.toString()})();`;

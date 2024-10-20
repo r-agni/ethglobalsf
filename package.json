@@ -21,9 +21,12 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^0.44.1",
-    "@lit-protocol/auth-helpers": "^6.4.10",
-    "@lit-protocol/constants": "^6.4.10",
+    "@lit-protocol/auth-helpers": "^6.11.0",
+    "@lit-protocol/constants": "^6.11.0",
     "@lit-protocol/contracts-sdk": "^6.4.10",
-    "@lit-protocol/lit-node-client": "^6.4.10"
+    "@lit-protocol/lit-node-client": "^6.11.0",
+    "@lit-protocol/sdk-nodejs": "^1.1.250",
+    "dotenv": "^16.4.5",
+    "ethers": "v5"
   }
 }
